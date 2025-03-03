@@ -1,0 +1,7 @@
+name: mirte-itl
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - conda-forge::selenium
+  - conda-forge::pytest
