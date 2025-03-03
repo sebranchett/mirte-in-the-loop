@@ -17,3 +17,8 @@ def test_search_python(driver):
     search_bar.send_keys("Python")
     search_bar.send_keys(Keys.RETURN)
     assert "Python" in driver.title
+
+
+def test_frontend_server_reachable(driver):
+    driver.get("http://localhost:4000/#/")
+    assert "mirte-web-frontend" in driver.title
