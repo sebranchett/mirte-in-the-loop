@@ -1,12 +1,25 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-# from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+import time
 import pytest
 
 # web_address = "http://localhost:4000/#/"
 web_address = "http://192.168.42.1/#/"
 
 ir_sensor_min_start_value = 100
+ir_sensor_difference = 10.
+
+
+def average_ir_value(driver, cycles_to_average=10):
+    value = 0.
+    for _ in range(cycles_to_average):
+        element = driver.find_element(
+            By.XPATH, "//div[contains(text(), 'voorkant:')]"
+        )
+        value += int(element.text.split(":")[1].strip())
+        time.sleep(0.1)  # small delay to get different readings
+    return value / cycles_to_average
 
 
 @pytest.fixture(scope="module")
@@ -14,14 +27,6 @@ def driver():
     driver = webdriver.Chrome()
     yield driver
     driver.quit()
-
-
-# def test_search_python(driver):
-#     driver.get("https://www.python.org/")
-#     search_bar = driver.find_element(By.NAME, "q")
-#     search_bar.send_keys("Python")
-#     search_bar.send_keys(Keys.RETURN)
-#     assert "Python" in driver.title
 
 
 def test_frontend_server_reachable(driver):
@@ -39,6 +44,7 @@ def test_sensors_column_present(driver):
 
 def test_ir_sensor_present(driver):
     driver.get(web_address)
+    time.sleep(0.5)  # small delay to load components
     sensor = driver.find_elements(
         By.XPATH, "//h5[contains(text(), 'sensor')]"
     )
@@ -74,3 +80,43 @@ def test_value_ir_sensor(driver):
     )
     value = int(element.text.split(":")[1].strip())
     assert value > ir_sensor_min_start_value
+
+
+def test_moving_forward_increases_ir_value(driver):
+    driver.get(web_address)
+    # find initial value of IR sensor
+    value = average_ir_value(driver)
+
+    # press down the forward button to move something in font of the sensor
+    forward_button = driver.find_element(
+        By.XPATH, "//button[@title='Forward']"
+    )
+    actions = ActionChains(driver)
+    actions.click_and_hold(forward_button).perform()
+    time.sleep(1.)
+    actions.release(forward_button).perform()
+
+    # find the new IR sensor value
+    new_value = average_ir_value(driver)
+
+    assert new_value - value > ir_sensor_difference
+
+
+def test_moving_backwards_decreases_ir_value(driver):
+    driver.get(web_address)
+    # find initial value of IR sensor
+    value = average_ir_value(driver)
+
+    # press down the Backward button to remove something in font of the sensor
+    backward_button = driver.find_element(
+        By.XPATH, "//button[@title='Backward']"
+    )
+    actions = ActionChains(driver)
+    actions.click_and_hold(backward_button).perform()
+    time.sleep(1.)
+    actions.release(backward_button).perform()
+
+    # find the new IR sensor value
+    new_value = average_ir_value(driver)
+
+    assert value - new_value > ir_sensor_difference
