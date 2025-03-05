@@ -60,7 +60,11 @@ def test_actuator_controls_present(driver):
         By.XPATH, "//button[contains(@class, 'btn-mirte-control')]"
     )
     # By.XPATH, "//button[@title='Forward']"
-    assert len(controls) == 5
+    number_of_control_buttons = 5
+    assert len(controls) == number_of_control_buttons
+    assert controls[0].get_attribute('title') == 'Forward'
+    assert controls[2].get_attribute('title') == 'Stop'
+    assert controls[4].get_attribute('title') == 'Backward'
 
 
 def test_value_ir_sensor(driver):
