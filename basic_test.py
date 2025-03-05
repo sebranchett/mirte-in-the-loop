@@ -3,23 +3,35 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 import time
 import pytest
+import os
 
-# web_address = "http://localhost:4000/#/"
-web_address = "http://192.168.42.1/#/"
+mocking = os.getenv('MOCKING', default='false').lower()
+mock_value = 1050
+mock_value_increments = [+200, -200, -200, +200]
+mock_value_index = -1
+if mocking == 'true':
+    web_address = os.path.join(os.path.dirname(__file__), 'mocking_test.html')
+else:
+    web_address = "http://192.168.42.1:4000/#/"
 
 ir_sensor_min_start_value = 1000
 ir_sensor_difference = 100.
 
 
 def average_ir_value(driver, cycles_to_average=10):
-    value = 0.
-    for _ in range(cycles_to_average):
-        element = driver.find_element(
-            By.XPATH, "//div[contains(text(), 'voorkant:')]"
-        )
-        value += int(element.text.split(":")[1].strip())
-        time.sleep(0.1)  # small delay to get different readings
-    return value / cycles_to_average
+    if mocking == 'true':
+        global mock_value_index
+        mock_value_index += 1
+        return mock_value + mock_value_increments[mock_value_index]
+    else:
+        value = 0.
+        for _ in range(cycles_to_average):
+            element = driver.find_element(
+                By.XPATH, "//div[contains(text(), 'voorkant:')]"
+            )
+            value += int(element.text.split(":")[1].strip())
+            time.sleep(0.1)  # small delay to get different readings
+        return value / cycles_to_average
 
 
 @pytest.fixture(scope="module")

@@ -21,3 +21,9 @@ Connect to MIRTE's WiFi and type the following:
 pytest
 ```
 There should be no errors and all tests should pass.
+
+To mock the tests, run:
+```sh
+env MOCKING=True pytest
+```
+This will run the tests without connecting to MIRTE.
