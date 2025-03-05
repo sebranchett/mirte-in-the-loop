@@ -12,7 +12,11 @@ conda activate mirte-itl
 ```
 
 ## Usage
-To run the tests, execute the following command:
+To run the tests, make sure that MIRTE is on and set up for physical testing.
+
+<img src="./assets/testingPOC.jpg" alt="Testing POC" width="300"/>
+
+Connect to MIRTE's WiFi and type the following:
 ```sh
 pytest
 ```
