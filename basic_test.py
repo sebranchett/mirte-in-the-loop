@@ -7,8 +7,8 @@ import pytest
 # web_address = "http://localhost:4000/#/"
 web_address = "http://192.168.42.1/#/"
 
-ir_sensor_min_start_value = 100
-ir_sensor_difference = 10.
+ir_sensor_min_start_value = 1000
+ir_sensor_difference = 100.
 
 
 def average_ir_value(driver, cycles_to_average=10):
@@ -82,7 +82,7 @@ def test_value_ir_sensor(driver):
     assert value > ir_sensor_min_start_value
 
 
-def test_moving_forward_increases_ir_value(driver):
+def test_moving_forward_decreases_ir_value(driver):
     driver.get(web_address)
     # find initial value of IR sensor
     value = average_ir_value(driver)
@@ -93,16 +93,16 @@ def test_moving_forward_increases_ir_value(driver):
     )
     actions = ActionChains(driver)
     actions.click_and_hold(forward_button).perform()
-    time.sleep(1.)
+    time.sleep(0.0002)
     actions.release(forward_button).perform()
 
     # find the new IR sensor value
     new_value = average_ir_value(driver)
 
-    assert new_value - value > ir_sensor_difference
+    assert value - new_value > ir_sensor_difference
 
 
-def test_moving_backwards_decreases_ir_value(driver):
+def test_moving_backwards_increases_ir_value(driver):
     driver.get(web_address)
     # find initial value of IR sensor
     value = average_ir_value(driver)
@@ -113,10 +113,10 @@ def test_moving_backwards_decreases_ir_value(driver):
     )
     actions = ActionChains(driver)
     actions.click_and_hold(backward_button).perform()
-    time.sleep(1.)
+    time.sleep(0.0002)
     actions.release(backward_button).perform()
 
     # find the new IR sensor value
     new_value = average_ir_value(driver)
 
-    assert value - new_value > ir_sensor_difference
+    assert new_value - value > ir_sensor_difference
