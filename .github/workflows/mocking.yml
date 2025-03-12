@@ -10,16 +10,14 @@ on:
     workflow_dispatch:
 
 jobs:
-  example-3:
+  basic_tests:
     name: Mocking test
     runs-on: "ubuntu-latest"
-    defaults:
-      run:
-        shell: bash -el {0}
     steps:
-      - uses: actions/checkout@v4
-      - uses: nanasess/setup-chromedriver@v2
-      - uses: conda-incubator/setup-miniconda@v3
+      - name: Check out repositroy
+        uses: actions/checkout@v4
+      - name: Set up Conda environment
+        uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: anaconda-client-env
           environment-file: environment.yml
@@ -28,6 +26,10 @@ jobs:
       - run: |
           conda info
           conda list
+      - name: Install browser dependencies
+        run: |
+          pip install chromedriver-autoinstaller pyvirtualdisplay
+          sudo apt-get install xvfb
       - name: Set environment variable and run tests
         env:
           MOCKING: true
