@@ -24,4 +24,6 @@ jobs:
                 conda info
                 conda list
             - name: Run tests
-              run: env MOCKING=True pytest
+              env:
+                MOCKING: True
+              run: pytest
