@@ -27,3 +27,7 @@ jobs:
       - run: |
           conda info
           conda list
+      - name: Set environment variable and run tests
+        run: |
+          export MOCKING=true
+          pytest
