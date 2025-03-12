@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 import time
 import pytest
@@ -41,7 +42,17 @@ def driver():
     if not location:
         driver = webdriver.Chrome()
     else:
-        driver = webdriver.Chrome(service=Service(location + "/chromedriver"))
+        chrome_service = Service(location + "/chromedriver")
+        chrome_options = Options()
+        for option in ['--headless', '--disable-gpu',
+                       '--window-size=1920,1200',
+                       '--ignore-certificate-errors',
+                       '--disable-extensions', '--no-sandbox',
+                       '--disable-dev-shm-usage']:
+            chrome_options.add_argument(option)
+        driver = webdriver.Chrome(
+            service=chrome_service, options=chrome_options
+        )
     yield driver
     driver.quit()
 
