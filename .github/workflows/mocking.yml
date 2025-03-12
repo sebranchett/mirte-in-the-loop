@@ -18,15 +18,13 @@ jobs:
             - uses: conda-incubator/setup-miniconda@v3
               with:
                 activate-environment: mirte-itl
+                python-version: 3.10
                 environment-file: environment.yml
                 auto-activate-base: false
             - run: |
-                conda activate mirte-itl
                 conda info
                 conda list
             - name: Run tests
               env:
                 MOCKING: True
-              run: |
-                conda activate mirte-itl
-                pytest
+              run: pytest
