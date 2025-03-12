@@ -18,6 +18,7 @@ jobs:
         shell: bash -el {0}
     steps:
       - uses: actions/checkout@v4
+      - uses: nanasess/setup-chromedriver@v2
       - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: anaconda-client-env
