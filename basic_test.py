@@ -44,6 +44,7 @@ def driver():
     if not location:
         driver = webdriver.Chrome()
     else:
+        # See: https://github.com/orgs/community/discussions/44279
         chrome_service = Service(location + "/chromedriver")
         chrome_options = Options()
         for option in ['--headless', '--disable-gpu',
