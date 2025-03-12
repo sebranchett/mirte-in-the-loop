@@ -17,7 +17,7 @@ jobs:
       max-parallel: 5
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.12"]
+        python-version: ["3.11"]
 
     steps:
     - uses: actions/checkout@v4
@@ -30,12 +30,11 @@ jobs:
       run: |
         conda install -y python=${{ matrix.python-version }}
         conda env update --file environment.yml --name base
-        pip install chromedriver-autoinstaller pyvirtualdisplay
-        find $CONDA -name '*selenium-manager*'
+        # pip install chromedriver-autoinstaller pyvirtualdisplay
     - name: Set up environment and run tests
       env:
         MOCKING: true
       run: |
-        export DISPLAY=:99
-        Xvfb :99 &
+        # export DISPLAY=:99
+        # Xvfb :99 &
         pytest
