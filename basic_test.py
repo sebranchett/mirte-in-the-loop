@@ -11,9 +11,10 @@ mocking = os.getenv('MOCKING', default='false').lower()
 mock_value = 1050
 mock_value_increments = [+200, -200, -200, +200]
 mock_value_index = -1
-mocking = 'true'  # just checking
 if mocking == 'true':
-    web_address = os.path.join(os.path.dirname(__file__), 'mocking_test.html')
+    web_address = 'file:///' + os.path.join(
+        os.path.dirname(__file__), 'mocking_test.html'
+    )
 else:
     web_address = "http://192.168.42.1:4000/#/"
 

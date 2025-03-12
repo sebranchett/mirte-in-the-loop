@@ -17,12 +17,9 @@ jobs:
       max-parallel: 5
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.11"]
+        python-version: ["3.12"]
 
     steps:
-    - name: check webdrivers
-      run: |
-        $CHROMEWEBDRIVER/chromedriver --version
     - uses: actions/checkout@v4
     - name: Add conda to system path
       run: |
@@ -33,11 +30,8 @@ jobs:
       run: |
         conda install -y python=${{ matrix.python-version }}
         conda env update --file environment.yml --name base
-        # pip install chromedriver-autoinstaller pyvirtualdisplay
     - name: Set up environment and run tests
       env:
         MOCKING: true
       run: |
-        # export DISPLAY=:99
-        # Xvfb :99 &
         pytest
