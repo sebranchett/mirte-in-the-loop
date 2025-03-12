@@ -1,0 +1,28 @@
+name: Mocking test
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
+        - name: Set up Conda environment
+          run: |
+            # $CONDA is an environment variable pointing to the root of the miniconda directory
+            echo $CONDA/bin >> $GITHUB_PATH
+            conda env create -f environment.yml
+            conda activate mirte-itl
+
+        - name: Run tests
+          run: env MOCKING=True pytest
