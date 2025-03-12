@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.chrome.service import Service
 import time
 import pytest
 import os
@@ -36,8 +37,11 @@ def average_ir_value(driver, cycles_to_average=10):
 
 @pytest.fixture(scope="module")
 def driver():
-    # driver = webdriver.Chrome()
-    driver = webdriver.Chrome("/usr/local/share/chrome_driver/chromedriver")
+    location = os.getenv('CHROMEWEBDRIVER')
+    if not location:
+        driver = webdriver.Chrome()
+    else:
+        driver = webdriver.Chrome(service=Service(location + "/chromedriver"))
     yield driver
     driver.quit()
 

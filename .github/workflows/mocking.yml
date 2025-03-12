@@ -20,6 +20,9 @@ jobs:
         python-version: ["3.11"]
 
     steps:
+    - name: check webdrivers
+      run: |
+        $CHROMEWEBDRIVER/chromedriver --version
     - uses: actions/checkout@v4
     - name: Add conda to system path
       run: |
