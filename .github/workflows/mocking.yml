@@ -11,7 +11,7 @@ on:
 
 jobs:
   example-3:
-    name: Ex3 Linux
+    name: Mocking test
     runs-on: "ubuntu-latest"
     defaults:
       run:
@@ -28,6 +28,7 @@ jobs:
           conda info
           conda list
       - name: Set environment variable and run tests
+        env:
+          MOCKING: true
         run: |
-          export MOCKING=true
           pytest
