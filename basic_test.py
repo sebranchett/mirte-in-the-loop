@@ -36,7 +36,7 @@ def average_ir_value(driver, cycles_to_average=10):
 
 @pytest.fixture(scope="module")
 def driver():
-    driver = webdriver.Chrome()
+    # driver = webdriver.Chrome()
     driver = webdriver.Chrome("/usr/local/share/chrome_driver/chromedriver")
     yield driver
     driver.quit()
