@@ -37,8 +37,13 @@ This will run the tests without connecting to MIRTE.
 1. [Anaconda](https://www.anaconda.com/products/distribution)
 1. WiFi connection to a network with internet access
 1. Connection to MIRTE's WiFi network
-1. `mirte-in-the-loop` directory containing a clone of this repository
+1. `mirte-in-the-loop` directory containing a clone of this repository. The workflow will `pull` updates.
 1. `.env.local` file with system information needed to complete the workflow. See `.example.env.local` for an example.
 
 ## Notes
 - The IR sensor is sensitive to light. The tests will not work in bright environments.
+- Useful commands:
+    - `netsh wlan show networks  # Find networks`
+    - `netsh wlan show profile  # Find profiles`
+- Do not start in the `mirte-itl` conda environment. The workflow needs to delete and recreate this environment.
+- Empty the logs directory regularly to avoid running out of disk space.
