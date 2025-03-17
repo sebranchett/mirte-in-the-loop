@@ -63,7 +63,7 @@ else
 fi
 
 #  Run the tests
-conda run -n mirte-itl --live-stream bash -c "pytest"  # test MIRTE
+conda run -n mirte-itl --live-stream bash -c "pytest" >> $LOG_FILE  # test MIRTE
 if [ $? -eq 0 ]; then
     echo "Congratulations! All tests passed" >> $LOG_FILE
 else
