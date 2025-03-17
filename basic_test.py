@@ -16,7 +16,7 @@ if mocking == 'true':
         os.path.dirname(__file__), 'mocking_test.html'
     )
 else:
-    web_address = "http://192.168.42.1:4000/#/"
+    web_address = "http://192.168.42.1/#/"
 
 ir_sensor_min_start_value = 1000
 ir_sensor_difference = 100.
