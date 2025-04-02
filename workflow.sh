@@ -28,15 +28,6 @@ else
     exit 1
 fi
 
-# Update the repository
-git pull
-if [ $? -eq 0 ]; then
-    echo "Repository updated successfully" >> $LOG_FILE
-else
-    echo "Could not update the repository" >> $LOG_FILE
-    exit 1
-fi
-
 # Update the conda environment
 conda env remove -y --name mirte-itl  # remove previous conda environment
 conda env create -y -f environment.yml
