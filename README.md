@@ -39,6 +39,12 @@ This will run the tests without connecting to MIRTE.
 1. Connection to MIRTE's WiFi network
 1. `mirte-in-the-loop` directory containing a clone of this repository. The startup will `pull` updates.
 1. `.env.local` file with path, network and branch information. See `.example.env.local` for an example.
+1. Working keychain to enable `ssh` without entering a password:
+```sh
+ssh-keygen
+ssh-copy-id mirte@mirte.local
+ssh mirte@mirte.local
+```
 
 ## Notes
 - The IR sensor is sensitive to light. The tests will not work in bright environments.

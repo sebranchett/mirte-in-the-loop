@@ -1,5 +1,7 @@
 #!/bin/bash
 
+MIRTE_SRC_DIR=/usr/local/src/mirte
+
 # Use the timestamp to set up the log file
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
 LOG_FILE="logs/${TIMESTAMP}.log"
@@ -47,7 +49,17 @@ else
     exit 1
 fi
 
-# Connect to MIRTE
+# Clone the mirte-web-interface repository
+#SEB TODO: parameterise this
+mkdir -p gitdir
+cd gitdir || exit 1
+rm -rf mirte-web-interface
+git clone https://github.com/mirte-robot/mirte-web-interface.git
+cd mirte-web-interface
+git checkout main
+cd ../..
+
+# Connect to MIRTE WiFi
 netsh wlan connect ssid=${SSID_MIRTE} name=${SSID_MIRTE_PROFILE}  # connect to internet
 sleep 10 # wait for the connection to be established and stable
 # Check if connected to the network we asked for
@@ -58,6 +70,10 @@ else
     echo "Could not connect to ${SSID_MIRTE} MIRTE WiFi network" >> $LOG_FILE
     exit 1
 fi
+
+# Update the mirte-web-interface repository and install it
+scp -r gitdir/mirte-web-interface/ mirte@mirte.local:$MIRTE_SRC_DIR/mirte-web-interface-new
+#SEB TODO: install the new web interface
 
 #  Run the tests
 conda run -n mirte-itl --live-stream bash -c "pytest" >> $LOG_FILE  # test MIRTE
