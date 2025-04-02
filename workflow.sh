@@ -6,9 +6,15 @@ LOG_FILE="logs/${TIMESTAMP}.log"
 
 # Set up paths and networks
 source .env.local
-echo Internet SSID is $SSID_INTERNET >> $LOG_FILE
 
 cd $START_DIR/mirte-in-the-loop
+if [ $? -eq 0 ]; then
+    echo "Starting from directory ${PWD}" >> $LOG_FILE
+else
+    echo "Could not find starting directory"
+    exit 1
+fi
+echo Internet SSID is $SSID_INTERNET >> $LOG_FILE
 
 # Connect to internet
 netsh wlan connect ssid=${SSID_INTERNET} name=${SSID_INTERNET_PROFILE}  # connect to internet
