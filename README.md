@@ -42,7 +42,9 @@ This will run the tests without connecting to MIRTE.
 1. Working keychain to enable `ssh` without entering a password:
 ```sh
 ssh-keygen
-ssh-copy-id mirte@mirte.local
+ssh-copy-id mirte@mirte.local  # will ask for password
+eval `ssh-agent -s`  # may only need to do this on Windows
+ssh-add ~/.ssh/id_rsa  # or the path to your private key
 ssh mirte@mirte.local
 ```
 
