@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# get conda working in a bash script
+eval "$(command conda 'shell.bash' 'hook')"
+
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
 # Use the timestamp to set up the log file
@@ -13,17 +16,14 @@ cd $START_DIR/mirte-in-the-loop
 if [ $? -eq 0 ]; then
     echo "Starting from directory ${PWD}" >> $LOG_FILE
 else
-    echo "Could not find starting directory"
+    echo "Could not find starting directory" >> $LOG_FILE
     exit 1
 fi
 echo Internet SSID is $SSID_INTERNET >> $LOG_FILE
 
 # Connect to internet
-netsh wlan connect ssid=${SSID_INTERNET} name=${SSID_INTERNET_PROFILE}  # connect to internet
-sleep 5 # wait for the connection to be established
-# Check if connected to the network we asked for
-network=$(netsh wlan show interfaces | grep ' SSID' |  grep ${SSID_INTERNET} | wc -l)
-if [ "$network" -gt 0 ]; then
+./helper_scripts/connect_to_wifi.sh ${SSID_INTERNET} ${SSID_INTERNET_PROFILE}
+if [ $? -eq 0 ]; then
     echo "Connected to ${SSID_INTERNET} internet network successfully" >> $LOG_FILE
 else
     echo "Could not connect to ${SSID_INTERNET} WiFi network" >> $LOG_FILE
@@ -31,6 +31,9 @@ else
 fi
 
 # Update the conda environment
+if [ $CONDA_DEFAULT_ENV == "mirte-itl" ]; then
+    conda deactivate
+fi
 conda env remove -y --name mirte-itl  # remove previous conda environment
 conda env create -y -f environment.yml
 if [ $? -eq 0 ]; then
@@ -39,6 +42,8 @@ else
     echo "Could not update the Conda environment" >> $LOG_FILE
     exit 1
 fi
+conda activate mirte-itl
+echo "Active Conda environment is: $CONDA_DEFAULT_ENV" >> $LOG_FILE
 
 # Run tests with MOCKING flag
 conda run -n mirte-itl --live-stream bash -c "env MOCKING=True pytest" >> $LOG_FILE  # test the test
@@ -57,14 +62,11 @@ rm -rf mirte-web-interface
 git clone https://github.com/mirte-robot/mirte-web-interface.git
 cd mirte-web-interface
 git checkout main
-cd ../..
+cd $START_DIR/mirte-in-the-loop
 
 # Connect to MIRTE WiFi
-netsh wlan connect ssid=${SSID_MIRTE} name=${SSID_MIRTE_PROFILE}  # connect to internet
-sleep 10 # wait for the connection to be established and stable
-# Check if connected to the network we asked for
-network=$(netsh wlan show interfaces | grep ' SSID' |  grep ${SSID_MIRTE} | wc -l)
-if [ "$network" -gt 0 ]; then
+./helper_scripts/connect_to_wifi.sh ${SSID_MIRTE} ${SSID_MIRTE_PROFILE}
+if [ $? -eq 0 ]; then
     echo "Connected to ${SSID_MIRTE} MIRTE WiFi network successfully" >> $LOG_FILE
 else
     echo "Could not connect to ${SSID_MIRTE} MIRTE WiFi network" >> $LOG_FILE

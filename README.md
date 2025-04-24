@@ -51,5 +51,4 @@ ssh mirte@mirte.local
 - Useful commands:
     - `netsh wlan show networks  # Find networks`
     - `netsh wlan show profile  # Find profiles`
-- Do not start in the `mirte-itl` conda environment. The workflow needs to delete and recreate this environment.
 - Empty the logs directory regularly to avoid running out of disk space.
