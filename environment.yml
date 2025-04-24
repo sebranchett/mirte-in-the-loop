@@ -5,3 +5,4 @@ channels:
 dependencies:
   - conda-forge::selenium
   - conda-forge::pytest
+  - conda-forge::nodeenv

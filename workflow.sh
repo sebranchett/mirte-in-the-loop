@@ -54,18 +54,44 @@ else
     exit 1
 fi
 
-# Clone the mirte-web-interface repository
-#SEB TODO: parameterise this
-mkdir -p gitdir
-cd gitdir || exit 1
-rm -rf mirte-web-interface
-git clone https://github.com/mirte-robot/mirte-web-interface.git
-cd mirte-web-interface
-git checkout main
-cd $START_DIR/mirte-in-the-loop
+
+# Make the web installation scripts from mirte-install-scripts install_web script
+./helper_scripts/clone_repository.sh mirte-install-scripts main
+if [ $? -eq 0 ]; then
+    echo "Successfully cloned mirte-install-scripts repository" >> $LOG_FILE
+else
+    echo "Could not clone mirte-install-scripts repository" >> $LOG_FILE
+    exit 1
+fi
+cp $START_DIR/mirte-install-scripts/install_web.sh install.sh && \
+sed -i 's/sudo/# sudo/' install.sh && \
+sed -i 's/MIRTE_SRC_DIR=/# MIRTE_SRC_DIR=/' install.sh && \
+sed -i 's/MIRTE_SRC_DIR/START_DIR/' install.sh && \
+sed -i 's/.*\/activate/export NODE_VIRTUAL_ENV=$START_DIR\/mirte-web-interface\/node_env\nexport PATH=$NODE_VIRTUAL_ENV\/Scripts:\$PATH/' install.sh && \
+sed -i 's/deactivate_node/# deactivate_node/' install.sh || exit 1
+grep system $START_DIR/mirte-install-scripts/install_web.sh > update_web_service.sh || exit 1
+
+# Clone the mirte-web-interface repository and build the web interfaces
+./helper_scripts/clone_repository.sh mirte-web-interface main
+if [ $? -eq 0 ]; then
+    echo "Successfully cloned mirte-web-interface repository" >> $LOG_FILE
+else
+    echo "Could not clone mirte-web-interface repository" >> $LOG_FILE
+    exit 1
+fi
+
+# Build the web interfaces
+rm -rf $START_DIR/mirte-web-interface/node_env && \
+./install.sh
+if [ $? -eq 0 ]; then
+    echo "Successfully built the web front and backend" >> $LOG_FILE
+else
+    echo "Could not build the web front and backend" >> $LOG_FILE
+    exit 1
+fi
 
 # Connect to MIRTE WiFi
-./helper_scripts/connect_to_wifi.sh ${SSID_MIRTE} ${SSID_MIRTE_PROFILE}
+$START_DIR/helper_scripts/connect_to_wifi.sh ${SSID_MIRTE} ${SSID_MIRTE_PROFILE}
 if [ $? -eq 0 ]; then
     echo "Connected to ${SSID_MIRTE} MIRTE WiFi network successfully" >> $LOG_FILE
 else
@@ -73,9 +99,46 @@ else
     exit 1
 fi
 
-# Update the mirte-web-interface repository and install it
-scp -r gitdir/mirte-web-interface/ mirte@mirte.local:$MIRTE_SRC_DIR/mirte-web-interface-new
-#SEB TODO: install the new web interface
+# Update mirte-install-scripts repository on MIRTE
+cd $START_DIR/mirte-install-scripts
+git diff ssh://mirte@mirte.local/$MIRTE_SRC_DIR/mirte-install-scripts
+if [ $? -eq 0 ]; then
+    echo "No changes in mirte-install-scripts." >> $LOG_FILE
+else
+    scp -r $START_DIR/mirte-install-scripts/ mirte@mirte.local:/$MIRTE_SRC_DIR/mirte-install-scripts || exit 1
+    echo "Changes in mirte-install-scripts copied to MIRTE" >> $LOG_FILE
+fi
+
+cd $START_DIR/mirte-in-the-loop
+scp update_web_service.sh mirte@mirte.local:/$MIRTE_SRC_DIR/ || exit 1
+
+# Update mirte-web-interface repository on MIRTE
+cd $START_DIR/mirte-web-interface
+git diff ssh://mirte@mirte.local/$MIRTE_SRC_DIR/mirte-web-interface
+if [ $? -eq 0 ]; then
+    echo "No changes in mirte-web-interface." >> $LOG_FILE
+else
+    scp -r $START_DIR/mirte-web-interface/ mirte@mirte.local:/$MIRTE_SRC_DIR/mirte-web-interface || exit 1
+    echo "Changes in mirte-web-interface copied to MIRTE" >> $LOG_FILE
+    # Update the web service
+    ssh mirte@mirte.local ". $MIRTE_SRC_DIR/update_web_service.sh"
+    if [ $? -eq 0 ]; then
+        echo "Successfully updated the web service" >> $LOG_FILE
+    else
+        echo "Could not update the web service" >> $LOG_FILE
+        exit 1
+    fi
+fi
+
+# Connect to MIRTE WiFi
+cd $START_DIR/mirte-in-the-loop
+./helper_scripts/connect_to_wifi.sh ${SSID_MIRTE} ${SSID_MIRTE_PROFILE}
+if [ $? -eq 0 ]; then
+    echo "Connected to ${SSID_MIRTE} MIRTE WiFi network successfully" >> $LOG_FILE
+else
+    echo "Could not connect to ${SSID_MIRTE} MIRTE WiFi network" >> $LOG_FILE
+    exit 1
+fi
 
 #  Run the tests
 conda run -n mirte-itl --live-stream bash -c "pytest" >> $LOG_FILE  # test MIRTE

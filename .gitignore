@@ -5,3 +5,5 @@ __pycache__/
 logs/
 gitdir/
 tmp/
+install.sh
+update_web_service.sh
