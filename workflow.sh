@@ -136,8 +136,6 @@ else
     exit 1
 fi
 
-exit 1
-
 # Connect to MIRTE WiFi
 $HELPER_DIR/connect_to_wifi.sh ${SSID_MIRTE} ${SSID_MIRTE_PROFILE}
 if [ $? -eq 0 ]; then
@@ -150,7 +148,7 @@ fi
 # Update mirte-install-scripts repository on MIRTE
 cd $START_DIR/mirte-install-scripts
 git fetch mirte main
-git diff mirte/main
+git diff mirte/main | wc -l
 if [ $? -eq 0 ]; then
     echo "No changes in mirte-install-scripts." >> $LOG_FILE
 else
@@ -164,7 +162,7 @@ scp update_web_service.sh mirte@mirte.local:/$MIRTE_SRC_DIR/ || exit 1
 # Update mirte-web-interface repository on MIRTE
 cd $START_DIR/mirte-web-interface
 git fetch mirte main
-git diff mirte/main
+git diff mirte/main | wc -l
 if [ $? -eq 0 ]; then
     echo "No changes in mirte-web-interface." >> $LOG_FILE
 else
