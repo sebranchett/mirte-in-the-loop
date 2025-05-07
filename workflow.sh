@@ -5,12 +5,13 @@ eval "$(command conda 'shell.bash' 'hook')"
 
 MIRTE_SRC_DIR=/usr/local/src/mirte
 
-# Use the timestamp to set up the log file
-TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
-LOG_FILE="logs/${TIMESTAMP}.log"
-
 # Set up paths and networks
 source .env.local
+HELPER_DIR="${START_DIR}/mirte-in-the-loop/helper_scripts"
+
+# Use the timestamp to set up the log file
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+LOG_FILE="${START_DIR}/mirte-in-the-loop/logs/${TIMESTAMP}.log"
 
 cd $START_DIR/mirte-in-the-loop
 if [ $? -eq 0 ]; then
@@ -22,7 +23,13 @@ fi
 echo Internet SSID is $SSID_INTERNET >> $LOG_FILE
 
 # Connect to internet
-./helper_scripts/connect_to_wifi.sh ${SSID_INTERNET} ${SSID_INTERNET_PROFILE}  || exit 1
+$HELPER_DIR/connect_to_wifi.sh ${SSID_INTERNET} ${SSID_INTERNET_PROFILE}
+if [ $? -eq 0 ]; then
+    echo "Connected to internet" >> $LOG_FILE
+else
+    echo "Could not connect to internet" >> $LOG_FILE
+    exit 1
+fi
 
 # Update the conda environment
 if [ $CONDA_DEFAULT_ENV == "mirte-itl" ]; then
@@ -53,7 +60,7 @@ fi
 cd $START_DIR
 # if the directory mirte-install-scripts does not exist, clone it
 if [ ! -d "mirte-install-scripts" ]; then
-    ./helper_scripts/clone_repository.sh mirte-install-scripts main
+    $HELPER_DIR/clone_repository.sh mirte-install-scripts main
     if [ $? -eq 0 ]; then
         echo "Successfully cloned mirte-install-scripts repository" >> $LOG_FILE
     else
@@ -82,6 +89,7 @@ cd $START_DIR/mirte-in-the-loop
 cp $START_DIR/mirte-install-scripts/install_web.sh install.sh && \
 sed -i 's/sudo/# sudo/' install.sh && \
 sed -i 's/MIRTE_SRC_DIR/START_DIR/' install.sh && \
+sed -i "s/START_DIR=.*/START_DIR=\${START_DIR}/" install.sh && \
 sed -i 's/.*\/activate/export NODE_VIRTUAL_ENV=$START_DIR\/mirte-web-interface\/node_env\nexport PATH=$NODE_VIRTUAL_ENV\/Scripts:\$PATH/' install.sh && \
 sed -i 's/deactivate_node/# deactivate_node/' install.sh || exit 1
 grep system $START_DIR/mirte-install-scripts/install_web.sh > update_web_service.sh || exit 1
@@ -90,7 +98,7 @@ grep system $START_DIR/mirte-install-scripts/install_web.sh > update_web_service
 cd $START_DIR
 # if the directory mirte-web-interface does not exist, clone it
 if [ ! -d "mirte-web-interface" ]; then
-    ./helper_scripts/clone_repository.sh mirte-web-interface main
+    $HELPER_DIR/clone_repository.sh mirte-web-interface main
     if [ $? -eq 0 ]; then
         echo "Successfully cloned mirte-web-interface repository" >> $LOG_FILE
     else
@@ -118,7 +126,7 @@ fi
 # Build the web interfaces
 cd $START_DIR/mirte-web-interface
 rm -rf node_env && \
-./install.sh
+${START_DIR}/mirte-in-the-loop/install.sh
 if [ $? -eq 0 ]; then
     echo "Successfully built the web front and backend" >> $LOG_FILE
 else
@@ -126,8 +134,16 @@ else
     exit 1
 fi
 
+exit 1
+
 # Connect to MIRTE WiFi
-$START_DIR/helper_scripts/connect_to_wifi.sh ${SSID_MIRTE} ${SSID_MIRTE_PROFILE} || exit 1
+$HELPER_DIR/connect_to_wifi.sh ${SSID_MIRTE} ${SSID_MIRTE_PROFILE}
+if [ $? -eq 0 ]; then
+    echo "Connected to MIRTE WiFi" >> $LOG_FILE
+else
+    echo "Could not connect to MIRTE WiFi" >> $LOG_FILE
+    exit 1
+fi
 
 # Update mirte-install-scripts repository on MIRTE
 cd $START_DIR/mirte-install-scripts
