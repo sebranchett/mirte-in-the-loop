@@ -70,6 +70,7 @@ if [ ! -d "mirte-install-scripts" ]; then
 else
     echo "mirte-install-scripts directory already exists" >> $LOG_FILE
     cd mirte-install-scripts
+    git checkout main
     git pull origin main
     if [ $? -eq 0 ]; then
         echo "Successfully updated mirte-install-scripts repository" >> $LOG_FILE
@@ -108,6 +109,7 @@ if [ ! -d "mirte-web-interface" ]; then
 else
     echo "mirte-web-interface directory already exists" >> $LOG_FILE
     cd mirte-web-interface
+    git checkout main
     git pull origin main
     if [ $? -eq 0 ]; then
         echo "Successfully updated mirte-web-interface repository" >> $LOG_FILE
@@ -147,6 +149,7 @@ fi
 
 # Update mirte-install-scripts repository on MIRTE
 cd $START_DIR/mirte-install-scripts
+git fetch mirte main
 git diff mirte/main
 if [ $? -eq 0 ]; then
     echo "No changes in mirte-install-scripts." >> $LOG_FILE
@@ -160,6 +163,7 @@ scp update_web_service.sh mirte@mirte.local:/$MIRTE_SRC_DIR/ || exit 1
 
 # Update mirte-web-interface repository on MIRTE
 cd $START_DIR/mirte-web-interface
+git fetch mirte main
 git diff mirte/main
 if [ $? -eq 0 ]; then
     echo "No changes in mirte-web-interface." >> $LOG_FILE
@@ -177,6 +181,7 @@ else
 fi
 
 #  Run the tests
+cd $START_DIR/mirte-in-the-loop
 conda run -n mirte-itl --live-stream bash -c "pytest" >> $LOG_FILE  # test MIRTE
 if [ $? -eq 0 ]; then
     echo "Congratulations! All tests passed" >> $LOG_FILE
