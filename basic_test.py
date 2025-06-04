@@ -18,8 +18,8 @@ if mocking == 'true':
 else:
     web_address = "http://192.168.42.1/#/"
 
-ir_sensor_min_start_value = 1000
-ir_sensor_difference = 100.
+ir_sensor_min_high_value = 1000.
+ir_sensor_max_low_value = 300.
 
 
 def average_ir_value(driver, cycles_to_average=10):
@@ -104,50 +104,50 @@ def test_actuator_controls_present(driver):
     assert controls[4].get_attribute('title') == 'Backward'
 
 
-def test_value_ir_sensor(driver):
+def test_servo_slider_180(driver):
     driver.get(web_address)
+
+    # find the element with 'servo:'
     element = driver.find_element(
-        By.XPATH, "//div[contains(text(), 'voorkant:')]"
+        By.XPATH, "//div[contains(text(), 'servo:')]"
     )
-    value = int(element.text.split(":")[1].strip())
-    assert value > ir_sensor_min_start_value
 
+    # find the slider within the parent
+    slider = element.find_element(By.XPATH, "..//input[@type='range']")
+    assert slider is not None
 
-def test_moving_forward_decreases_ir_value(driver):
-    driver.get(web_address)
-    # find initial value of IR sensor
-    value = average_ir_value(driver)
-
-    # press down the forward button to move something in font of the sensor
-    forward_button = driver.find_element(
-        By.XPATH, "//button[@title='Forward']"
-    )
+    # move the slider all the way to the right
     actions = ActionChains(driver)
-    actions.click_and_hold(forward_button).perform()
-    time.sleep(0.0002)
-    actions.release(forward_button).perform()
+    actions.click_and_hold(slider).move_by_offset(100, 0).release().perform()
+    time.sleep(0.5)  # wait for the slider to update
 
+    # get the new value of the slider
+    high_slider_value = int(element.text.split(":")[1].strip())
+    assert high_slider_value == 180
     # find the new IR sensor value
-    new_value = average_ir_value(driver)
+    high_value = average_ir_value(driver)
+    assert high_value < ir_sensor_max_low_value
 
-    assert value - new_value > ir_sensor_difference
 
-
-def test_moving_backwards_increases_ir_value(driver):
+def test_servo_slider_0(driver):
     driver.get(web_address)
-    # find initial value of IR sensor
-    value = average_ir_value(driver)
 
-    # press down the Backward button to remove something in font of the sensor
-    backward_button = driver.find_element(
-        By.XPATH, "//button[@title='Backward']"
+    # find the element with 'servo:'
+    element = driver.find_element(
+        By.XPATH, "//div[contains(text(), 'servo:')]"
     )
+
+    # find the slider within the parent
+    slider = element.find_element(By.XPATH, "..//input[@type='range']")
+    assert slider is not None
+    # move the slider all the way to the left
     actions = ActionChains(driver)
-    actions.click_and_hold(backward_button).perform()
-    time.sleep(0.0002)
-    actions.release(backward_button).perform()
+    actions.click_and_hold(slider).move_by_offset(-100, 0).release().perform()
+    time.sleep(0.5)  # wait for the slider to update
 
+    # get the new value of the slider
+    low_slider_value = int(element.text.split(":")[1].strip())
+    assert low_slider_value == 0
     # find the new IR sensor value
-    new_value = average_ir_value(driver)
-
-    assert new_value - value > ir_sensor_difference
+    high_value = average_ir_value(driver)
+    assert high_value > ir_sensor_min_high_value
