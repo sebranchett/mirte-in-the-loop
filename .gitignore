@@ -3,7 +3,3 @@ __pycache__/
 .env.local
 *.txt
 logs/
-gitdir/
-tmp/
-install.sh
-update_web_service.sh
