@@ -12,9 +12,9 @@ conda activate mirte-itl
 ```
 
 ## Usage
-To run the tests, make sure that MIRTE is on and set up for physical testing.
+To run the tests, make sure that MIRTE is on and set up for physical testing with a test module.
 
-<img src="./assets/testingPOC.jpg" alt="Testing POC" width="300"/>
+<img src="./assets/DanteWilliamsI.jpg" alt="Test module" width="300"/>
 
 Connect to MIRTE's WiFi and type the following:
 ```sh
@@ -30,14 +30,16 @@ This will run the tests without connecting to MIRTE.
 
 ## Running the complete workflow
 ### Pre-requisites
-1. [MIRTE basic](https://mirte.org/robots), fully assembled and set up for physical testing.
+1. [MIRTE basic](https://mirte.org/robots), fully assembled and set up.
+1. Test module. This is comprised of an IR sensor at the top of a light excluding cylinder. The sensor is the same as MIRTE's IR sensor and the connecting wire can be redirected to the test module. At the other end of the cylinder is a servo motor that turns a disk in the middle of the cylinder. Configure the test module's servo as described [in the documentation](https://docs.mirte.org/0.1.0/doc/configure_mirte.html). The disk has a white half and a black half. When the servo turns the disk, the IR sensor detects the colour of the disk. 
 1. Main computer, used to update MIRTE and run the tests.
+
 ### Pre-requisites Main Computer (Windows)
 1. [GitBash](https://git-scm.com/downloads)
 1. [Anaconda](https://www.anaconda.com/products/distribution)
 1. WiFi connection to a network with internet access
 1. Connection to MIRTE's WiFi network
-1. `mirte-in-the-loop` directory containing a clone of this repository. The startup will `pull` updates.
+1. `mirte-in-the-loop` directory containing a clone of this repository.
 1. `.env.local` file with path, network and branch information. See `.example.env.local` for an example.
 1. Working keychain to enable `ssh` without entering a password:
 ```sh
@@ -48,9 +50,16 @@ ssh-add ~/.ssh/id_rsa  # or the path to your private key
 ssh mirte@mirte.local
 ```
 
+### Running the Workflow Script
+To run the full test cycle, type the following command in GitBash, on the main computer:
+```sh
+./startup.sh
+```
+`startup.sh` will pull the latest version of this repository and then start the `workflow.sh` script. `workflow.sh` takes care of the conda environment and network connections, and runs the `pytest`s in both mocking mode (on the main computer) and on MIRTE. All output is sent to a time-stamped file in the logs directory.
+
 ## Notes
 - The IR sensor is sensitive to light. The tests will not work in bright environments.
-- Useful commands:
+- Useful commands (Windows):
     - `netsh wlan show networks  # Find networks`
     - `netsh wlan show profile  # Find profiles`
 - Empty the logs directory regularly to avoid running out of disk space.
