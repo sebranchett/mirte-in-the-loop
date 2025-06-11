@@ -66,6 +66,7 @@ fi
 
 #  Run the tests
 cd $START_DIR/mirte-in-the-loop
+sleep 10
 conda run -n mirte-itl --live-stream bash -c "pytest" >> $LOG_FILE  # test MIRTE
 if [ $? -eq 0 ]; then
     echo "Congratulations! All tests passed" >> $LOG_FILE

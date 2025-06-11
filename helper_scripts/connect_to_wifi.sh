@@ -7,6 +7,7 @@
 ssid=$1
 ssid_profile=$2
 
+netsh wlan disconnect
 netsh wlan connect ssid=${ssid} name=${ssid_profile}  || exit 1  # connect to internet
 
 # Check if connected to the network we asked for
