@@ -12,9 +12,10 @@ conda activate mirte-itl
 ```
 
 ## Usage
-To run the tests, make sure that MIRTE is on and set up for physical testing with a test module.
+To run the tests, make sure that MIRTE is on and set up for physical testing with a test module. See pre-requisites below.
 
-<img src="./assets/DanteWilliamsI.jpg" alt="Test module" width="300"/>
+<img src="./assets/MIRTEwithTestModule.jpg" alt="MIRTE with t
+est module" width="300"/>
 
 Connect to MIRTE's WiFi and type the following:
 ```sh
@@ -30,8 +31,10 @@ This will run the tests without connecting to MIRTE.
 
 ## Running the complete workflow
 ### Pre-requisites
+<img src="./assets/DanteWilliamsI.jpg" alt="Test module" width="300"/>
+
 1. [MIRTE basic](https://mirte.org/robots), fully assembled and set up.
-1. Test module. This is comprised of an IR sensor at the top of a light excluding cylinder. The sensor is the same as MIRTE's IR sensor and the connecting wire can be redirected to the test module. At the other end of the cylinder is a servo motor that turns a disk in the middle of the cylinder. Configure the test module's servo as described [in the documentation](https://docs.mirte.org/0.1.0/doc/configure_mirte.html). The disk has a white half and a black half. When the servo turns the disk, the IR sensor detects the colour of the disk. 
+1. Test module. This is comprised of an IR sensor at the top of a light excluding cylinder. The sensor is the same as MIRTE's IR sensor and the connecting wire can be redirected to the test module. At the other end of the cylinder is a servo motor that turns a disk in the middle of the cylinder. Configure the test module's servo as described [in the documentation](https://docs.mirte.org/0.1.0/doc/configure_mirte.html). The disk has a white half and a black half. When the servo turns the disk, the IR sensor detects the colour of the disk. The connecting wires should be towards the white side of the disk for the tests to run successfully.
 1. Main computer, used to update MIRTE and run the tests.
 
 ### Pre-requisites Main Computer (Windows)
