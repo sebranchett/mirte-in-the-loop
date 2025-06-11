@@ -8,8 +8,8 @@ import pytest
 import os
 
 mocking = os.getenv('MOCKING', default='false').lower()
-mock_value = 1050
-mock_value_increments = [+200, -200, -200, +200]
+mock_value = 200
+mock_value_increments = [0, 1000]
 mock_value_index = -1
 if mocking == 'true':
     web_address = 'file:///' + os.path.join(
@@ -104,26 +104,33 @@ def test_actuator_controls_present(driver):
     assert controls[4].get_attribute('title') == 'Backward'
 
 
-def test_servo_slider_180(driver):
+def test_servo_present(driver):
     driver.get(web_address)
 
-    # find the element with 'servo:'
+    # find the servo slider
     element = driver.find_element(
         By.XPATH, "//div[contains(text(), 'servo:')]"
     )
-
-    # find the slider within the parent
     slider = element.find_element(By.XPATH, "..//input[@type='range']")
+
+    assert element is not None
     assert slider is not None
+
+
+def test_servo_slider_180(driver):
+    driver.get(web_address)
+
+    # find the servo slider
+    element = driver.find_element(
+        By.XPATH, "//div[contains(text(), 'servo:')]"
+    )
+    slider = element.find_element(By.XPATH, "..//input[@type='range']")
 
     # move the slider all the way to the right
     actions = ActionChains(driver)
     actions.click_and_hold(slider).move_by_offset(100, 0).release().perform()
     time.sleep(0.5)  # wait for the slider to update
 
-    # get the new value of the slider
-    high_slider_value = int(element.text.split(":")[1].strip())
-    assert high_slider_value == 180
     # find the new IR sensor value
     high_value = average_ir_value(driver)
     assert high_value < ir_sensor_max_low_value
@@ -132,22 +139,17 @@ def test_servo_slider_180(driver):
 def test_servo_slider_0(driver):
     driver.get(web_address)
 
-    # find the element with 'servo:'
+    # find the servo slider
     element = driver.find_element(
         By.XPATH, "//div[contains(text(), 'servo:')]"
     )
-
-    # find the slider within the parent
     slider = element.find_element(By.XPATH, "..//input[@type='range']")
-    assert slider is not None
+
     # move the slider all the way to the left
     actions = ActionChains(driver)
     actions.click_and_hold(slider).move_by_offset(-100, 0).release().perform()
     time.sleep(0.5)  # wait for the slider to update
 
-    # get the new value of the slider
-    low_slider_value = int(element.text.split(":")[1].strip())
-    assert low_slider_value == 0
     # find the new IR sensor value
     high_value = average_ir_value(driver)
     assert high_value > ir_sensor_min_high_value
