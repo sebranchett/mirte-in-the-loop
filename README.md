@@ -23,13 +23,10 @@ You will need:
 1. Connection to MIRTE's WiFi network
 1. `mirte-in-the-loop` directory containing a clone of this repository.
 1. `.env.local` file with path, network and branch information. See `.example.env.local` for an example.
-1. Optional: Working keychain to enable `ssh` without entering a password:
+1. If you are using a Raspberry Pi as the main computer, add these lines to the `~/.bashrc`, so that conda is activated and Selenium can find the Chrome WebDriver:
 ```sh
-ssh-keygen
-ssh-copy-id mirte@mirte.local  # will ask for password
-eval `ssh-agent -s`  # may only need to do this on Windows
-ssh-add ~/.ssh/id_rsa  # or the path to your private key
-ssh mirte@mirte.local
+eval "$(/home/mirte/miniforge3/bin/conda shell.bash hook)"
+export CHROMEWEBDRIVER=/usr/bin  # location that contains chromedriver
 ```
 
 ## Initial test
@@ -65,9 +62,12 @@ bash ./startup.sh
 - Useful commands (Windows):
     - `netsh wlan show networks  # Find networks`
     - `netsh wlan show profile  # Find profiles`
-- If you are using a Raspberry Pi as the main computer, add these lines to the `~/.bashrc`, so that conda is activated and Selenium can find the Chrome WebDriver:
+- You can set up a keychain to `ssh` into MIRTE directly, without entering a password:
 ```sh
-eval "$(/home/mirte/miniforge3/bin/conda shell.bash hook)"
-export CHROMEWEBDRIVER=/usr/bin  # location that contains chromedriver
+ssh-keygen
+ssh-copy-id mirte@mirte.local  # will ask for password
+eval `ssh-agent -s`  # may only need to do this on Windows
+ssh-add ~/.ssh/id_rsa  # or the path to your private key
+ssh mirte@mirte.local
 ```
 - Empty the logs directory regularly to avoid running out of disk space.
