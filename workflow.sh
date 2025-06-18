@@ -23,7 +23,7 @@ fi
 echo Internet SSID is $SSID_INTERNET >> $LOG_FILE
 
 # Connect to internet
-$HELPER_DIR/connect_to_wifi.sh ${SSID_INTERNET} ${SSID_INTERNET_PROFILE}
+bash $HELPER_DIR/connect_to_wifi.sh ${SSID_INTERNET} ${SSID_INTERNET_PROFILE}
 if [ $? -eq 0 ]; then
     echo "Connected to internet" >> $LOG_FILE
 else
@@ -56,7 +56,7 @@ else
 fi
 
 # Connect to MIRTE WiFi
-$HELPER_DIR/connect_to_wifi.sh ${SSID_MIRTE} ${SSID_MIRTE_PROFILE}
+bash $HELPER_DIR/connect_to_wifi.sh ${SSID_MIRTE} ${SSID_MIRTE_PROFILE}
 if [ $? -eq 0 ]; then
     echo "Connected to MIRTE WiFi" >> $LOG_FILE
 else
