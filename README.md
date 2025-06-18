@@ -65,8 +65,9 @@ bash ./startup.sh
 - Useful commands (Windows):
     - `netsh wlan show networks  # Find networks`
     - `netsh wlan show profile  # Find profiles`
-- If you are using a Raspberry Pi as the main computer, add this line to the `~/.bashrc`, so that Selenium can find the Chrome WebDriver:
+- If you are using a Raspberry Pi as the main computer, add these lines to the `~/.bashrc`, so that conda is activated and Selenium can find the Chrome WebDriver:
 ```sh
+eval "$(/home/mirte/miniforge3/bin/conda shell.bash hook)"
 export CHROMEWEBDRIVER=/usr/bin  # location that contains chromedriver
 ```
 - Empty the logs directory regularly to avoid running out of disk space.
