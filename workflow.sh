@@ -47,7 +47,7 @@ conda activate mirte-itl
 echo "Active Conda environment is: $CONDA_DEFAULT_ENV" >> $LOG_FILE
 
 # Run tests with MOCKING flag
-conda run -n mirte-itl --live-stream bash -c "env MOCKING=True pytest" >> $LOG_FILE  # test the test
+conda run -n mirte-itl bash -c "env MOCKING=True pytest" >> $LOG_FILE  # test the test
 if [ $? -eq 0 ]; then
     echo "All MOCKING tests passed" >> $LOG_FILE
 else
@@ -67,7 +67,7 @@ fi
 #  Run the tests
 cd $START_DIR/mirte-in-the-loop
 sleep 10
-conda run -n mirte-itl --live-stream bash -c "pytest" >> $LOG_FILE  # test MIRTE
+conda run -n mirte-itl bash -c "pytest" >> $LOG_FILE  # test MIRTE
 if [ $? -eq 0 ]; then
     echo "Congratulations! All tests passed" >> $LOG_FILE
 else
