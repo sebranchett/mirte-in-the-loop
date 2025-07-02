@@ -31,17 +31,22 @@ else
     exit 1
 fi
 
-# Update the conda environment
-if [ $CONDA_DEFAULT_ENV == "mirte-itl" ]; then
-    conda deactivate
-fi
-conda env remove -y --name mirte-itl  # remove previous conda environment
-conda env create -y -f environment.yml
-if [ $? -eq 0 ]; then
-    echo "Conda environment updated successfully" >> $LOG_FILE
+# Only update the conda environment if environment.yml has changed
+if git diff --quiet HEAD~1 HEAD -- environment.yml; then
+    echo "environment.yml has not changed, skipping conda environment update" >> $LOG_FILE
 else
-    echo "Could not update the Conda environment" >> $LOG_FILE
-    exit 1
+    # Update the conda environment
+    if [ "$CONDA_DEFAULT_ENV" == "mirte-itl" ]; then
+        conda deactivate
+    fi
+    conda env remove -y --name mirte-itl  # remove previous conda environment
+    conda env create -y -f environment.yml
+    if [ $? -eq 0 ]; then
+        echo "Conda environment updated successfully" >> $LOG_FILE
+    else
+        echo "Could not update the Conda environment" >> $LOG_FILE
+        exit 1
+    fi
 fi
 conda activate mirte-itl
 echo "Active Conda environment is: $CONDA_DEFAULT_ENV" >> $LOG_FILE
