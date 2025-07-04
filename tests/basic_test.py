@@ -132,8 +132,8 @@ def test_servo_slider_180(driver):
     time.sleep(0.5)  # wait for the slider to update
 
     # find the new IR sensor value
-    high_value = average_ir_value(driver)
-    assert high_value < ir_sensor_max_low_value
+    value = average_ir_value(driver)
+    assert value < ir_sensor_max_low_value
 
 
 def test_servo_slider_0(driver):
@@ -151,5 +151,5 @@ def test_servo_slider_0(driver):
     time.sleep(0.5)  # wait for the slider to update
 
     # find the new IR sensor value
-    high_value = average_ir_value(driver)
-    assert high_value > ir_sensor_min_high_value
+    value = average_ir_value(driver)
+    assert value > ir_sensor_min_high_value
