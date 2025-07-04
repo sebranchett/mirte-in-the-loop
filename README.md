@@ -12,12 +12,12 @@ est module" width="300"/>
 You will need:
 1. [MIRTE basic](https://mirte.org/robots), fully assembled and set up.
 1. Test module. This is comprised of an IR sensor at the top of a light excluding cylinder. The sensor is the same as MIRTE's IR sensor and the connecting wire can be redirected to the test module. At the other end of the cylinder is a servo motor that turns a disk in the middle of the cylinder. Configure the test module's servo as described [in the documentation](https://docs.mirte.org/0.1.0/doc/configure_mirte.html). The disk has a white half and a black half. When the servo turns the disk, the IR sensor detects the colour of the disk. The connecting wires should be towards the white side of the disk for the tests to run successfully.
-1. Main computer, used to update MIRTE and run the tests.
+1. Main computer, used to run the tests.
 
 <img src="./assets/DanteWilliamsI.jpg" alt="Test module" width="300"/>
 
 ## Main Computer pre-requisites
-1. [GitBash](https://git-scm.com/downloads)
+1. [GitBash](https://git-scm.com/downloads) if using Windows, or a bash terminal on Linux or macOS.
 1. [Anaconda](https://www.anaconda.com/products/distribution) or [Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/main)
 1. WiFi connection to a network with internet access
 1. Connection to MIRTE's WiFi network
@@ -55,10 +55,10 @@ To run the full test cycle, type the following command on the main computer:
 ```sh
 bash ./startup.sh
 ```
-`startup.sh` will pull the latest version of this repository and then start the `workflow.sh` script. `workflow.sh` takes care of the conda environment and network connections, and runs the `pytest`s in both mocking mode (on the main computer) and on MIRTE. All output is sent to a time-stamped file in the logs directory.
+`startup.sh` will pull the latest version of this repository and then start the `workflow.sh` script. `workflow.sh` takes care of the conda environment and network connections, and runs the `pytest`s in both mocking mode (on the main computer) and on MIRTE. All output is sent to a time-stamped file in the logs directory on the main computer.
 
 ## Notes
-- The IR sensor is sensitive to light. The tests will not work in bright environments.
+- The IR sensor is sensitive to light. The tests will not work in bright environments. This is why the test module is light excluding.
 - Useful commands (Windows):
     - `netsh wlan show networks  # Find networks`
     - `netsh wlan show profile  # Find profiles`
